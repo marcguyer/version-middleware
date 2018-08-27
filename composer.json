@@ -1,0 +1,58 @@
+{
+    "name": "marcguyer/version-middleware",
+    "description": "PSR-7 middleware for managing routable versioning.",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "php",
+        "psr-7",
+        "psr7",
+        "expressive",
+        "zf",
+        "zendframework",
+        "middleware",
+        "versioning",
+        "api"
+    ],
+    "support": {
+        "issues": "https://github.com/marcguyer/version-middleware/issues",
+        "source": "https://github.com/marcguyer/version-middleware",
+        "rss": "https://github.com/marcguyer/version-middleware/releases.atom"
+    },
+    "require": {
+        "php": "^7.1",
+        "psr/http-server-middleware": "^1.0",
+        "zendframework/zend-diactoros": "^1.8"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.3",
+        "zendframework/zend-coding-standard": "~1.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MG\\Versioning\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MGTest\\Versioning\\": "test/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "zf": {
+            "config-provider": "MG\\Versioning\\ConfigProvider"
+        }
+    },
+    "scripts": {
+        "check": [
+            "@cs-check",
+            "@test"
+        ],
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
+        "test": "phpunit --colors=always",
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
+    }
+}
