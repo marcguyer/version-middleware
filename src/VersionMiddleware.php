@@ -49,6 +49,7 @@ class VersionMiddleware implements MiddlewareInterface
 
     protected function fromPath(ServerRequestInterface $request): ServerRequestInterface
     {
+        $matches = $this->extractVersionFromPath($request);
         $version = array_merge(
             $this->versionDefaults,
             [
