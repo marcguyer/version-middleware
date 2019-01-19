@@ -137,7 +137,8 @@ class VersionMiddleware implements MiddlewareInterface
             return [];
         }
 
-        $accept = array_shift($request->getHeader('accept'));
+        $accept = $request->getHeader('accept');
+        $accept = array_shift($accept);
         $mediaRanges = explode(',', $accept);
 
         foreach ($mediaRanges as $a) {
