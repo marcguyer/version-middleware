@@ -2,6 +2,8 @@
 
 [![Build Status](https://secure.travis-ci.org/marcguyer/version-middleware.svg?branch=master)](https://secure.travis-ci.org/marcguyer/version-middleware)
 [![Coverage Status](https://coveralls.io/repos/github/marcguyer/version-middleware/badge.svg?branch=master)](https://coveralls.io/github/marcguyer/version-middleware?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/marcguyer/version-middleware/v/stable)](https://packagist.org/packages/marcguyer/version-middleware)
+[![Total Downloads](https://poser.pugx.org/marcguyer/version-middleware/downloads)](https://packagist.org/packages/marcguyer/version-middleware)
 
 Provides version detection, making versioned resource routing possible in PSR-7 applications.
 
