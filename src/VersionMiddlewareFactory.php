@@ -2,16 +2,44 @@
 
 declare(strict_types=1);
 
-namespace MG\Versioning;
+namespace Psr7Versioning;
 
 use Psr\Container\ContainerInterface;
 
+/**
+ * Factory for VersionMiddleware
+ */
 class VersionMiddlewareFactory
 {
-    public function __invoke(ContainerInterface $container)
+    /**
+     * @param ContainerInterface $container
+     *
+     * @return VersionMiddleware
+     */
+    public function __invoke(ContainerInterface $container): VersionMiddleware
     {
-        return new VersionMiddleware(
-            $container->get('config')['api_version']
-        );
+        $config = $container->get('config')['versioning'] ?? null;
+        if (null === $config) {
+            throw new \RuntimeException(
+                'Config key \'versioning\' missing'
+            );
+        }
+        if (!isset($config['version'])) {
+            throw new \RuntimeException(
+                'Default version config missing'
+            );
+        }
+        if (!isset($config['path_regex'])) {
+            throw new \RuntimeException(
+                'Version config path regex missing'
+            );
+        }
+        if (!isset($config['header_regex'])) {
+            throw new \RuntimeException(
+                'Version config header regex missing'
+            );
+        }
+
+        return new VersionMiddleware($config);
     }
 }

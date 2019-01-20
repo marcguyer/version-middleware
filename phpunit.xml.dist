@@ -4,7 +4,7 @@
          bootstrap="vendor/autoload.php"
          colors="true">
     <testsuites>
-        <testsuite name="MG\VersionMiddleware Tests">
+        <testsuite name="Psr7Versioning\VersionMiddleware Tests">
             <directory>./test</directory>
         </testsuite>
     </testsuites>

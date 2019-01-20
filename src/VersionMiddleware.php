@@ -2,13 +2,16 @@
 
 declare(strict_types=1);
 
-namespace MG\Versioning;
+namespace Psr7Versioning;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+/**
+ * Middleware for managing app versions
+ */
 class VersionMiddleware implements MiddlewareInterface
 {
     /**
@@ -26,6 +29,9 @@ class VersionMiddleware implements MiddlewareInterface
      */
     protected $headerRegex;
 
+    /**
+     * @param array $config
+     */
     public function __construct(array $config)
     {
         $this->versionDefaults = $config['version'];
@@ -33,6 +39,12 @@ class VersionMiddleware implements MiddlewareInterface
         $this->headerRegex = $config['header_regex'];
     }
 
+    /**
+     * @param ServerRequestInterface  $request
+     * @param RequestHandlerInterface $handler
+     *
+     * @return ResponseInterface
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         // if the path has the version, it takes precedence
@@ -47,9 +59,20 @@ class VersionMiddleware implements MiddlewareInterface
         return $handler->handle($this->fromDefaults($request));
     }
 
-    protected function fromPath(ServerRequestInterface $request): ServerRequestInterface
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return ServerRequestInterface
+     */
+    public function fromPath(ServerRequestInterface $request): ServerRequestInterface
     {
         $matches = $this->extractVersionFromPath($request);
+
+        // if no version info in the path, return with defaults
+        if (!$matches) {
+            return $this->fromDefaults($request);
+        }
+
         $version = array_merge(
             $this->versionDefaults,
             [
@@ -64,13 +87,13 @@ class VersionMiddleware implements MiddlewareInterface
             ->withAttribute(self::class, $version);
     }
 
-    protected function fromAcceptHeader(ServerRequestInterface $request): ServerRequestInterface
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return ServerRequestInterface
+     */
+    public function fromAcceptHeader(ServerRequestInterface $request): ServerRequestInterface
     {
-        // if no version info in the Accept: header, return with defaults
-        if (!$request->hasHeader('accept')) {
-            return $this->fromDefaults($request);
-        }
-
         // check the Accept header for version info
         $matches = $this->extractVersionFromAcceptHeader($request);
 
@@ -83,7 +106,7 @@ class VersionMiddleware implements MiddlewareInterface
         $version['from'] = 'header';
         // overwrite defaults with matched values
         foreach ($this->versionDefaults as $key => $val) {
-            $version[$key] = $matches[$key] ?? $val;
+            $version[$key] = $matches[$key] ?? $version[$key] ?? $val;
         }
 
         // prepend the requested version to the path so it can be routed
@@ -96,7 +119,12 @@ class VersionMiddleware implements MiddlewareInterface
             ->withAttribute(self::class, $version);
     }
 
-    protected function fromDefaults(ServerRequestInterface $request): ServerRequestInterface
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return ServerRequestInterface
+     */
+    public function fromDefaults(ServerRequestInterface $request): ServerRequestInterface
     {
         // prepend the default version to the path
         $newPath = '/v' . $this->versionDefaults['version']
@@ -105,17 +133,28 @@ class VersionMiddleware implements MiddlewareInterface
         // return the modified request
         return $request
             // set the rewritten path in the request obj
-            ->withUri($request->getUri()->withPath($newPath))
+            // don't modify path when using default
+            // ->withUri($request->getUri()->withPath($newPath))
             // add an attribute with the default version
             ->withAttribute(self::class, $this->versionDefaults);
     }
 
-    public function hasVersionInPath(ServerRequestInterface $request): bool
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return bool
+     */
+    private function hasVersionInPath(ServerRequestInterface $request): bool
     {
         return (bool) $this->extractVersionFromPath($request);
     }
 
-    public function extractVersionFromPath(ServerRequestInterface $request): array
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return array
+     */
+    private function extractVersionFromPath(ServerRequestInterface $request): array
     {
         // the first value that matches the regex is the winner
         foreach ($this->pathRegex as $r) {
@@ -127,12 +166,22 @@ class VersionMiddleware implements MiddlewareInterface
         return $matches ?? [];
     }
 
-    public function hasVersionInAcceptHeader(ServerRequestInterface $request): bool
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return bool
+     */
+    private function hasVersionInAcceptHeader(ServerRequestInterface $request): bool
     {
         return (bool) $this->extractVersionFromAcceptHeader($request);
     }
 
-    protected function extractVersionFromAcceptHeader(ServerRequestInterface $request): array
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return array
+     */
+    private function extractVersionFromAcceptHeader(ServerRequestInterface $request): array
     {
         if (!$request->hasHeader('accept')) {
             return [];
@@ -140,6 +189,7 @@ class VersionMiddleware implements MiddlewareInterface
 
         $accept = $request->getHeader('accept');
         $accept = array_shift($accept);
+
         $mediaRanges = explode(',', $accept);
 
         foreach ($mediaRanges as $a) {

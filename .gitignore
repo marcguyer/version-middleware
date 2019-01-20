@@ -1,1 +1,7 @@
 vendor/
+
+coverage/
+clover.xml
+
+phpcs.xml
+phpunit.xml

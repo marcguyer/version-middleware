@@ -1,19 +1,25 @@
 <?php
 
-namespace MGTest\Versioning;
+namespace Psr7VersioningTest;
 
 use PHPUnit\Framework\TestCase;
-use MG\Versioning\ConfigProvider;
-use MG\Versioning\VersionMiddleware;
+use Psr7Versioning\ConfigProvider;
+use Psr7Versioning\VersionMiddleware;
 
 class ConfigProviderTest extends TestCase
 {
+    /**
+     * @inheritDoc
+     */
     public function setUp()
     {
         $this->provider = new ConfigProvider();
     }
 
-    public function testInvocationReturnsArray()
+    /**
+     * @return array
+     */
+    public function testInvocationReturnsArray(): array
     {
         $config = ($this->provider)();
         $this->assertInternalType('array', $config);
@@ -22,6 +28,7 @@ class ConfigProviderTest extends TestCase
 
     /**
      * @depends testInvocationReturnsArray
+     * @param array $config
      */
     public function testReturnedArrayContainsDependencies(array $config)
     {
@@ -39,13 +46,14 @@ class ConfigProviderTest extends TestCase
 
     /**
      * @depends testInvocationReturnsArray
+     * @param array $config
      */
     public function testReturnedArrayContainsVersionConfig(array $config)
     {
-        $this->assertArrayHasKey('api_version', $config);
-        $this->assertInternalType('array', $config['api_version']);
+        $this->assertArrayHasKey('versioning', $config);
+        $this->assertInternalType('array', $config['versioning']);
 
-        $config = $config['api_version'];
+        $config = $config['versioning'];
 
         $this->assertArrayHasKey('version', $config);
         $this->assertInternalType('array', $config['version']);

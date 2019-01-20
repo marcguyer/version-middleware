@@ -20,21 +20,25 @@
     },
     "require": {
         "php": "^7.1",
-        "psr/http-server-middleware": "^1.0",
-        "zendframework/zend-diactoros": "^1.8"
+        "psr/container": "^1.0",
+        "psr/http-message": "^1.0",
+        "psr/http-server-middleware": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.3",
-        "zendframework/zend-coding-standard": "~1.0.0"
+        "psr/http-server-handler": "^1.0",
+        "webimpress/coding-standard": "dev-master@dev",
+        "zendframework/zend-coding-standard": "dev-develop@dev",
+        "zendframework/zend-diactoros": "^2.1"
     },
     "autoload": {
         "psr-4": {
-            "MG\\Versioning\\": "src/"
+            "Psr7Versioning\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "MGTest\\Versioning\\": "test/"
+            "Psr7VersioningTest\\": "test/"
         }
     },
     "config": {
@@ -42,7 +46,7 @@
     },
     "extra": {
         "zf": {
-            "config-provider": "MG\\Versioning\\ConfigProvider"
+            "config-provider": "Psr7Versioning\\ConfigProvider"
         }
     },
     "scripts": {
@@ -53,6 +57,7 @@
         "cs-check": "phpcs",
         "cs-fix": "phpcbf",
         "test": "phpunit --colors=always",
-        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
+        "test-coverage-dev": "phpunit --colors=always --coverage-html ./coverage"
     }
 }
