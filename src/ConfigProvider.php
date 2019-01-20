@@ -31,7 +31,7 @@ class ConfigProvider
                 // subpatterns in format (?P<name>) for "vendor", "version",
                 // and "resource"
                 'header_regex' => [
-                    // phpcs:ignore - this line is too long but that's ok
+                    // phpcs:ignore -- this line is too long but that's ok
                     '#^application/vnd\.(?P<vendor>[^.]+)\.v(?P<version>\d+)(?:\.(?P<resource>[a-zA-Z0-9_-]+))?(?:\+[a-z]+)?$#',
                 ],
                 // default version settings for Psr7Versioning\VersionMiddleware
