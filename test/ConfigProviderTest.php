@@ -1,17 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psr7VersioningTest;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr7Versioning\ConfigProvider;
 use Psr7Versioning\VersionMiddleware;
 
+use function preg_match;
+use function print_r;
+
 class ConfigProviderTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @inheritDoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->provider = new ConfigProvider();
     }
@@ -22,7 +30,7 @@ class ConfigProviderTest extends TestCase
     public function testInvocationReturnsArray(): array
     {
         $config = ($this->provider)();
-        $this->assertInternalType('array', $config);
+        $this->assertIsArray($config);
         return $config;
     }
 
@@ -33,10 +41,10 @@ class ConfigProviderTest extends TestCase
     public function testReturnedArrayContainsDependencies(array $config)
     {
         $this->assertArrayHasKey('dependencies', $config);
-        $this->assertInternalType('array', $config['dependencies']);
+        $this->assertIsArray($config['dependencies']);
 
         $this->assertArrayHasKey('factories', $config['dependencies']);
-        $this->assertInternalType('array', $config['dependencies']['factories']);
+        $this->assertIsArray($config['dependencies']['factories']);
         $this->assertArrayHasKey(
             VersionMiddleware::class,
             $config['dependencies']['factories'],
@@ -51,30 +59,30 @@ class ConfigProviderTest extends TestCase
     public function testReturnedArrayContainsVersionConfig(array $config)
     {
         $this->assertArrayHasKey('versioning', $config);
-        $this->assertInternalType('array', $config['versioning']);
+        $this->assertIsArray($config['versioning']);
 
         $config = $config['versioning'];
 
         $this->assertArrayHasKey('version', $config);
-        $this->assertInternalType('array', $config['version']);
+        $this->assertIsArray($config['version']);
 
         $this->assertArrayHasKey('vendor', $config['version']);
-        $this->assertInternalType('string', $config['version']['vendor']);
+        $this->assertIsString($config['version']['vendor']);
         $this->assertArrayHasKey('version', $config['version']);
-        $this->assertInternalType('string', $config['version']['version']);
+        $this->assertIsString($config['version']['version']);
         $this->assertArrayHasKey('resource', $config['version']);
-        $this->assertInternalType('string', $config['version']['resource']);
+        $this->assertIsString($config['version']['resource']);
         $this->assertArrayHasKey('from', $config['version']);
-        $this->assertInternalType('string', $config['version']['from']);
+        $this->assertIsString($config['version']['from']);
 
         // check for regex and validate
         foreach (['path_regex', 'header_regex'] as $key) {
             $this->assertArrayHasKey($key, $config);
-            $this->assertInternalType('array', $config[$key]);
+            $this->assertIsArray($config[$key]);
             foreach ($config[$key] as $r) {
-                $this->assertInternalType('string', $r);
+                $this->assertIsString($r);
                 $this->assertNotFalse(
-                    @preg_match($r, null),
+                    @preg_match($r, ''),
                     'Regex is invalid'
                 );
             }
