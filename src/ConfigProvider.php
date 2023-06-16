@@ -7,11 +7,10 @@ namespace Psr7Versioning;
 /**
  * The configuration provider for version middleware
  *
- * @see https://docs.zendframework.com/zend-component-installer/
+ * @see https://docs.laminas.dev/laminas-component-installer/
  */
 class ConfigProvider
 {
-
     /**
      * @return array
      */
@@ -19,7 +18,7 @@ class ConfigProvider
     {
         return [
             'dependencies' => $this->getDependencies(),
-            'versioning' => [
+            'versioning'   => [
                 // regex patterns to use in Psr7Versioning\VersionMiddleware
                 // to match path version each regex should include a named
                 // subpattern in format (?P<name>) for "version"
@@ -36,10 +35,10 @@ class ConfigProvider
                 ],
                 // default version settings for Psr7Versioning\VersionMiddleware
                 'version' => [
-                    'vendor' => 'unk',
-                    'version' => '1',
+                    'vendor'   => 'unk',
+                    'version'  => '1',
                     'resource' => '',
-                    'from' => 'default',
+                    'from'     => 'default',
                 ],
             ],
         ];

@@ -1,27 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psr7Versioning;
 
+use Laminas\Diactoros\ServerRequest;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ResponseInterface;
-use Psr7Versioning\VersionMiddleware;
-use Psr7Versioning\ConfigProvider;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\ServerRequest;
+use Psr7Versioning\ConfigProvider;
+use Psr7Versioning\VersionMiddleware;
 
 /**
  * @coversDefaultClass \Psr7Versioning\VersionMiddleware
  */
 class VersionMiddlewareTest extends TestCase
 {
+    use ProphecyTrait;
 
-    /**
-     * @return VersionMiddleware
-     */
-    private function getMiddleware() : VersionMiddleware
+    private function getMiddleware(): VersionMiddleware
     {
         $config = (new ConfigProvider())()['versioning'];
         return new VersionMiddleware($config);
@@ -29,13 +30,10 @@ class VersionMiddlewareTest extends TestCase
 
     /**
      * Mock a PSR request.
-     * @return ObjectProphecy
      */
     private function getMockRequest(): ObjectProphecy
     {
-        $request = $this->prophesize(ServerRequestInterface::class);
-
-        return $request;
+        return $this->prophesize(ServerRequestInterface::class);
     }
 
     /**
@@ -93,9 +91,6 @@ class VersionMiddlewareTest extends TestCase
 
     /**
      * @dataProvider pathVersionProvider
-     * @param string $path
-     * @param int $version
-     * @param string $source
      * @covers ::fromPath
      * @covers ::extractVersionFromPath
      */
@@ -140,51 +135,46 @@ class VersionMiddlewareTest extends TestCase
     public function headerVersionProvider(): array
     {
         return [
-           [
-               '', // empty
-               'unk',
-               1,
-               '',
-               'default'
-           ],
-          [
-              'no_header', // invalid
-              'unk',
-              1,
-              '',
-              'default'
-          ],
-           [
-               'application/vnd.chdr.v1.status',
-               'chdr',
-               1,
-               'status',
-           ],
-           [
-               'application/vnd.zend.v2.user',
-               'zend',
-               2,
-               'user',
-           ],
-       ];
+            [
+                '', // empty
+                'unk',
+                1,
+                '',
+                'default',
+            ],
+            [
+                'no_header', // invalid
+                'unk',
+                1,
+                '',
+                'default',
+            ],
+            [
+                'application/vnd.chdr.v1.status',
+                'chdr',
+                1,
+                'status',
+            ],
+            [
+                'application/vnd.mezzio.v2.user',
+                'mezzio',
+                2,
+                'user',
+            ],
+        ];
     }
 
     /**
      * @dataProvider headerVersionProvider
-     * @param string $header
-     * @param string $vendor
-     * @param int $version
-     * @param string $resource
-     * @param string $source
      * @covers ::fromAcceptHeader
      * @covers ::extractVersionFromAcceptHeader
      */
     public function testVersionFromHeader(
-       string $header,
-       string $vendor,
-       int $version,
-       string $resource,
-       string $source = 'header'
+        string $header,
+        string $vendor,
+        int $version,
+        string $resource,
+        string $source = 'header'
     ) {
         $request = new ServerRequest(
             [],
@@ -226,9 +216,6 @@ class VersionMiddlewareTest extends TestCase
     /**
      * @depends testVersionFromPath
      * @dataProvider pathVersionProvider
-     * @param string $path
-     * @param int $version
-     * @param string|null $source
      * @covers ::process
      * @covers ::hasVersionInPath
      */
@@ -237,41 +224,36 @@ class VersionMiddlewareTest extends TestCase
         int $version,
         ?string $source = 'path'
     ) {
-        $request = new ServerRequest(
+        $request  = new ServerRequest(
             [],
             [],
             $path
         );
         $response = $this->prophesize(ResponseInterface::class);
-        $handler = $this->prophesize(RequestHandlerInterface::class);
+        $handler  = $this->prophesize(RequestHandlerInterface::class);
         $handler
             ->handle(Argument::type(ServerRequest::class))
             ->will([$response, 'reveal']);
 
         $middleware = $this->getMiddleware();
-        $result = $middleware->process($request, $handler->reveal());
+        $result     = $middleware->process($request, $handler->reveal());
         $this->assertSame($response->reveal(), $result);
     }
 
     /**
      * @depends testVersionFromHeader
      * @dataProvider headerVersionProvider
-     * @param string $header
-     * @param string $vendor
-     * @param int $version
-     * @param string $resource
-     * @param string|null $source
      * @covers ::process
      * @covers ::hasVersionInAcceptHeader
      */
     public function testVersionInHeader(
-       string $header,
-       string $vendor,
-       int $version,
-       string $resource,
-       ?string $source = 'header'
+        string $header,
+        string $vendor,
+        int $version,
+        string $resource,
+        ?string $source = 'header'
     ) {
-        $request = new ServerRequest(
+        $request  = new ServerRequest(
             [],
             [],
             null,
@@ -280,13 +262,13 @@ class VersionMiddlewareTest extends TestCase
             ['accept' => $header]
         );
         $response = $this->prophesize(ResponseInterface::class);
-        $handler = $this->prophesize(RequestHandlerInterface::class);
+        $handler  = $this->prophesize(RequestHandlerInterface::class);
         $handler
             ->handle(Argument::type(ServerRequest::class))
             ->will([$response, 'reveal']);
 
         $middleware = $this->getMiddleware();
-        $result = $middleware->process($request, $handler->reveal());
+        $result     = $middleware->process($request, $handler->reveal());
         $this->assertSame($response->reveal(), $result);
     }
 }

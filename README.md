@@ -15,7 +15,7 @@ Install this library using composer:
 $ composer require marcguyer/version-middleware
 ```
 
-Composer will ask if you'd like to inject the ConfigProvider if you're using `zendframework/zend-component-installer`. Answer yes or config it by hand.
+Composer will ask if you'd like to inject the ConfigProvider if you're using `laminas/laminas-component-installer`. Answer yes or config it by hand.
 
 ## Usage
 
@@ -25,7 +25,7 @@ See the [ConfigProvider](src/ConfigProvider.php) for config defaults. You may ov
 
 ### Add to pipeline
 
-Wire this middleware into your pipeline before routing. An example using a Zend Expressive pipeline:
+Wire this middleware into your pipeline before routing. An example using a Mezzio pipeline:
 
 ```php
 ...
